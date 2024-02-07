@@ -153,47 +153,54 @@ namespace LSystem
                 entities.Add(ent);
 
                 LSystemParametric lSystem = new LSystemParametric(_rnd);
+                GlobalParam globalParam = new GlobalParam();
+                globalParam.Add("d", 4);
+                globalParam.Add("m", 2);
+                globalParam.Add("u", 1);
 
-                GlobalParam gparam = new GlobalParam();
-                gparam.Add("d1", 180.0f);
-                gparam.Add("d2", 252.0f);
-                gparam.Add("a", 36.0f);
-                gparam.Add("lr", 1.07f);
-                gparam.Add("vr", 1.732f);
-                gparam.Add("Tx", -0.61f);
-                gparam.Add("Ty", 0.77f);
-                gparam.Add("Tz", -0.19f);
-                gparam.Add("e", 0.40f);
+                lSystem.AddRule("a", varCount: 1, g: globalParam,
+                    condition: (t, p, n) => t[0] < globalParam["m"], 
+                    func: (MChar c, MChar p, MChar n, GlobalParam g) => MChar.Char("a", c[0] + 1).ToMString());
 
-                lSystem.AddRule("A", varCount: 0, g: gparam,
-                    condition: (t) => true, func: (MChar c, GlobalParam g) =>
-                    {
-                        return MChar.Char("!", g["vr"]) + MChar.Char("F", 0.5f)
-                        + MChar.Open + MChar.Char("&", g["a"]) + MChar.Char("F", 0.5f) + MChar.Char("A") + MChar.Close
-                        + MChar.Char("/", g["d1"])
-                        + MChar.Open + MChar.Char("&", g["a"]) + MChar.Char("F", 0.5f) + MChar.Char("A") + MChar.Close
-                        + MChar.Char("/", g["d2"])
-                        + MChar.Open + MChar.Char("&", g["a"]) + MChar.Char("F", 0.5f) + MChar.Char("A") + MChar.Close;
-                    });
+                lSystem.AddRule("a", varCount: 1, g: globalParam,
+                    condition: (t, p, n) => t[0] == globalParam["m"],
+                    func: (MChar c, MChar p, MChar n, GlobalParam g) => MChar.Char("I") + MChar.Open + MChar.Char("L") + MChar.Close + MChar.Char("a", 1));
 
-                lSystem.AddRule("F", varCount: 1, g: gparam,
-                    condition: (t) => true, func: (MChar c, GlobalParam g) =>
-                    {
-                        float l = c[0];
-                        return MChar.Char("F", l * g["lr"]).ToMString();
-                    });
+                lSystem.AddRule("D", varCount: 1, g: globalParam,
+                    condition: (t, p, n) => t[0] < globalParam["d"],
+                    func: (MChar c, MChar p, MChar n, GlobalParam g) => MChar.Char("D", c[0] + 1).ToMString());
 
-                lSystem.AddRule("!", varCount: 1, g: gparam,
-                    condition: (t) => true, func: (MChar c, GlobalParam g) =>
-                    {
-                        float w = c[0];
-                        return MChar.Char("!", w * g["vr"]).ToMString();
-                    });
+                lSystem.AddRule("D", varCount: 1, g: globalParam,
+                    condition: (t, p, n) => t[0] == globalParam["d"],
+                    func: (MChar c, MChar p, MChar n, GlobalParam g) => MChar.Char("S", 1).ToMString());
 
-                MString axiom = MChar.Char("!", 1) + MChar.Char("F", 2) + MChar.Char("/", 45) + MChar.A;
-                MString sentence = lSystem.Generate(axiom, 7);
-                Entity e1 = new Entity(LoaderLSystem.Load3dByAonoKunii(sentence, gparam), PrimitiveType.Triangles);
-                entities.Add(e1);
+                lSystem.AddRule("S", varCount: 1, g: globalParam,
+                    condition: (t, p, n) => t[0] < globalParam["u"],
+                    func: (MChar c, MChar p, MChar n, GlobalParam g) => MChar.Char("S", c[0] + 1).ToMString());
+
+                lSystem.AddRule("S", varCount: 1, g: globalParam,
+                    condition: (t, p, n) => t[0] == globalParam["u"],
+                    func: (MChar c, MChar p, MChar n, GlobalParam g) => MChar.Empty.ToMString());
+
+                lSystem.AddRule("I", varCount: 0, leftContext:"S", 1, g: globalParam,
+                    condition: (t, p, n) => p[0] == globalParam["u"],
+                    func: (MChar c, MChar p, MChar n, GlobalParam g) => MChar.Char("I") + MChar.Char("S", 1));
+
+                lSystem.AddRule("a", varCount: 1, leftContext: "S", 1, g: globalParam,
+                    condition: (t, p, n) => true,
+                    func: (MChar c, MChar p, MChar n, GlobalParam g) => MChar.I + MChar.Open + MChar.L + MChar.Close + MChar.A);
+
+                lSystem.AddRule("A", varCount: 0, g: globalParam,
+                    condition: (t, p, n) => true,
+                    func: (MChar c, MChar p, MChar n, GlobalParam g) => MChar.K.ToMString());
+
+                MString axiom = MChar.Char("D", 1) + MChar.Char("a", 1);
+                //axiom = MChar.Char("S", 1) + MChar.Char("a", 1);
+                Console.WriteLine("axiom=" + axiom);
+                MString sentence = lSystem.Generate(axiom, 8);
+                Console.WriteLine(sentence);
+                //Entity e1 = new Entity(LoaderLSystem.Load3dByAonoKunii(sentence, gparam), PrimitiveType.Triangles);
+                //entities.Add(e1);
             }
         }
     }

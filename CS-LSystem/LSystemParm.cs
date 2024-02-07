@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace LSystem
 {
-    public delegate bool Condition(MChar mchar);
+    public delegate bool Condition(MChar mchar, MChar pchar, MChar nchar);
 
-    public delegate MString MultiVariableFunc(MChar mchar, GlobalParam g);
+    public delegate MString MultiVariableFunc(MChar mchar, MChar pchar, MChar nchar, GlobalParam g);
 
     public class GlobalParam
     {
@@ -34,7 +34,13 @@ namespace LSystem
     {
         MultiVariableFunc _func;
         Condition _condition;
+        MChar _left;
+        MChar _right;
         GlobalParam _g;
+
+        public MChar Left => _left;
+
+        public MChar Right => _right;
 
         public GlobalParam GlobalParam => _g;
 
@@ -42,11 +48,13 @@ namespace LSystem
 
         public Condition Condition => _condition;
 
-        public Production(Condition condition, GlobalParam g, MultiVariableFunc func)
+        public Production(Condition condition, GlobalParam g, MultiVariableFunc func, MChar left, MChar right)
         {
             _func = func;
             _g = g;
             _condition = condition;
+            _left = left;
+            _right = right;
         }
     }
 
@@ -69,8 +77,33 @@ namespace LSystem
 
         public static MChar Char(string alphabet, params float[] values) => new MChar(alphabet, values);
 
+        public static MChar Empty => new MChar("");
+
+        public static MChar Null => new MChar("null");
+
+        public static MChar I => new MChar("I");
+
+        public static MChar K => new MChar("K");
+
+        public static MChar L => new MChar("L");
+
         public static MChar A => new MChar("A");
 
+        public static MChar a => new MChar("a");
+
+        public static MChar B => new MChar("B");
+
+        public static MChar b => new MChar("b");
+
+        public static MChar c => new MChar("c");
+
+        public static MChar d => new MChar("d");
+
+        public static MChar e => new MChar("e");
+
+        public static MChar f => new MChar("f");
+
+        public static MChar g => new MChar("g");
         public static MChar Plus => new MChar("+");
 
         public static MChar Minus => new MChar("-");
@@ -103,7 +136,7 @@ namespace LSystem
             _parametric = param;
         }
 
-        public bool IsSameClass(MChar mchar)
+        public bool IsSameNumOfInParameter(MChar mchar)
         {
             return _alphabet == mchar.Alphabet && Length == mchar.Length;
         }
@@ -123,6 +156,16 @@ namespace LSystem
         public static MString operator +(MChar a, MChar b)
         {
             return new MString(new MChar[] { a, b });
+        }
+
+        public static bool operator !=(MChar a, MChar b)
+        {
+            return a.Alphabet != b.Alphabet;
+        }
+
+        public static bool operator ==(MChar a, MChar b)
+        {
+            return a.Alphabet == b.Alphabet;
         }
 
         public MString ToMString()=> new MString(new MChar[] { this });
@@ -145,6 +188,19 @@ namespace LSystem
         }
 
         public object Current => _chars[position];
+
+        public static MString String(string txt)
+        {
+            MString str = MString.Null;
+            for (int i = 0; i < txt.Length; i++)
+            {
+                char chr = txt[i];
+                if (chr == '[') str += MChar.Open;
+                else if (chr == ']') str += MChar.Close;
+                else str += MChar.Char(chr.ToString());
+            }
+            return str;
+        }
 
         public override string ToString()
         {

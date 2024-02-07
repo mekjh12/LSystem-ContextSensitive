@@ -264,5 +264,15 @@ namespace LSystem
             }
             return txt;
         }
+
+        public static string String(this Stack<MChar> stack)
+        {
+            string txt = "";
+            foreach (MChar item in stack)
+            {
+                txt = item.Alphabet + txt;
+            }
+            return txt;
+        }
     }
 }
