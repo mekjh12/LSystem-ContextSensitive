@@ -56,5 +56,5 @@ axiom=D(1)a(1)
 5=I[L]IS(1)[L]I[L]a(1)
 6=I[L]I[L]IS(1)[L]a(2)
 7=I[L]I[L]I[L]I[L]A
-I[L]I[L]I[L]I[L]A
+8=I[L]I[L]I[L]I[L]K
 ```
