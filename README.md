@@ -46,7 +46,7 @@ Console.WriteLine("axiom=" + axiom);
 MString sentence = lSystem.Generate(axiom, 8);
 Console.WriteLine(sentence);
 ```
-
+```js
 axiom=D(1)a(1)
 0=D(2)a(2)
 1=D(3)I[L]a(1)
@@ -57,3 +57,4 @@ axiom=D(1)a(1)
 6=I[L]I[L]IS(1)[L]a(2)
 7=I[L]I[L]I[L]I[L]A
 I[L]I[L]I[L]I[L]A
+```
