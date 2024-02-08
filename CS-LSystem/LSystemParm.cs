@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,9 +22,10 @@ namespace LSystem
             _value = new Dictionary<string, float>();
         }
 
-        public void Add(string key, float value)
+        public float Add(string key, float value)
         {
             _value.Add(key, value);
+            return value;
         }
 
         public float this[string key] => _value[key];
@@ -36,7 +38,13 @@ namespace LSystem
         Condition _condition;
         MChar _left;
         MChar _right;
+        MChar _predecessor;
         GlobalParam _g;
+        float _probability;
+
+        public MChar Predecessor => _predecessor;
+
+        public float Probability => _probability;
 
         public MChar Left => _left;
 
@@ -48,13 +56,15 @@ namespace LSystem
 
         public Condition Condition => _condition;
 
-        public Production(Condition condition, GlobalParam g, MultiVariableFunc func, MChar left, MChar right)
+        public Production(Condition condition, GlobalParam g, MultiVariableFunc func, MChar predecessor, MChar left, MChar right, float probability)
         {
             _func = func;
             _g = g;
             _condition = condition;
             _left = left;
             _right = right;
+            _probability = probability;
+            _predecessor = predecessor;
         }
     }
 
